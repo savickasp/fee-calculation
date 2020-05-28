@@ -15,13 +15,11 @@
 		{
 			if (!preg_match('/(.csv)$/', $file)) {
 				return 'File format must be ".csv"';
-			}
-			if (!file_exists($file)) {
+			} elseif (!file_exists($file)) {
 				return ['error' => 'File not found'];
+			} else {
+				$this->openedFile = fopen($file, 'r');
 			}
-			$this->openedFile = fopen($file, 'r');
-
-			return $this;
 		}
 
 		public function getContent(bool $numberRows = false)

@@ -31,7 +31,8 @@
 		{
 			$filename = 'input.csv';
 			$csv = new CsvReader();
-			$data = $csv->openFile($filename)->getContent();
+			$csv->openFile($filename);
+			$data = $csv->getContent();
 			$output = [
 				0 => [
 					0 => "2014-12-31",
@@ -146,7 +147,8 @@
 		{
 			$filename = 'input.csv';
 			$csv = new CsvReader();
-			$data = $csv->openFile($filename)->getContent(true);
+			$csv->openFile($filename);
+			$data = $csv->getContent(true);
 			$output = [
 				0 => [
 					'row_id' => 0,
@@ -274,10 +276,12 @@
 		public function can_set_indexes_before_getting_getting_content()
 		{
 			$filename = 'input.csv';
-			$csv = new CsvReader();
-
 			$indexes = ['date', 'user_id', 'user_type', 'operation_type', 'amount', 'currency'];
-			$data = $csv->openFile($filename)->setIndexes($indexes)->getContent(true);
+
+			$csv = new CsvReader();
+			$csv->openFile($filename);
+
+			$data = $csv->setIndexes($indexes)->getContent(true);
 
 			$output = [
 				'row_id' => 0,
