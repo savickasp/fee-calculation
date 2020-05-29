@@ -14,7 +14,7 @@
 		public function openFile(string $file)
 		{
 			if (!preg_match('/(.csv)$/', $file)) {
-				return 'File format must be ".csv"';
+				return ['error' => 'File format must be ".csv"'];
 			} elseif (!file_exists($file)) {
 				return ['error' => 'File not found'];
 			} else {
@@ -56,6 +56,7 @@
 			$ret = [];
 
 			foreach ($row as $fieldIndex => $field) {
+
 				if (isset($this->indexes[$fieldIndex])) {
 					$ret[$this->indexes[$fieldIndex]] = $field;
 				} else {

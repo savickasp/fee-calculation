@@ -2,7 +2,7 @@
 
 	declare(strict_types=1);
 
-	namespace Tests\Support\Files;
+	namespace Tests\Feature;
 
 
 	use App\Support\Files\CsvReader;
@@ -15,7 +15,7 @@
 		{
 			$filename = 'file.txt';
 			$csv = new CsvReader();
-			$this->assertEquals('File format must be ".csv"', $csv->openFile($filename));
+			$this->assertEquals('File format must be ".csv"', $csv->openFile($filename)['error']);
 		}
 
 		/** @test */
@@ -23,7 +23,7 @@
 		{
 			$filename = 'file.csv';
 			$csv = new CsvReader();
-			$this->assertEquals(['error' => 'File not found'], $csv->openFile($filename));
+			$this->assertEquals('File not found', $csv->openFile($filename)['error']);
 		}
 
 		/** @test */
