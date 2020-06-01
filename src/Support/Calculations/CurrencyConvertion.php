@@ -13,7 +13,15 @@
 			],
 		];
 
-
+		/**
+		 * @param int $amount
+		 * @param string $from
+		 * @param string $to
+		 * @return false|float|int|string
+		 *
+		 * This method if currency convertion rate is set.
+		 * Currently cant convert USD to JPY
+		 */
 		public function convert(int $amount, string $from, string $to)
 		{
 			if (array_key_exists($from, $this->exchange)){
