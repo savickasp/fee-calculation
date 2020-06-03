@@ -1,11 +1,18 @@
-# Paysera Commission task skeleton
+# Solution to task
 
-Following steps:
-- don't forget to change `Paysera` namespace and package name in `composer.json`
- to your own, as `Paysera` keyword should not be used anywhere in your task;
-- `\Paysera\CommissionTask\Service\Math` is an example class provided for the skeleton and could or could not be used by your preference;
-- needed scripts could be found inside `composer.json`;
-- before submitting the task make sure that all the scripts pass (`composer run test` in particular);
-- this file should be updated before submitting the task with the documentation on how to run your program.
+Dependencies:
+added dependencies only in dev mode to have dd() and dump()  functions
 
-Good luck! :) 
+setup:
+- download project
+- composer install
+
+Solutions flow:
+- run script.php file it creates instance of FeeController
+- then call methed getOperations(). It gets all operatiosn from file and add them to controller parameters
+- if error found in previuos method it prints out error and exit
+- if there is no error thten it calls calculateFees() and return array 
+- array is printed to stdout
+- then exit
+
+created seperate class CsvReader t oread and get content of csv file
