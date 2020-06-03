@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
 
-	namespace Tests\Unit;
+namespace Tests\Unit;
 
 
-	use App\Support\Calculations\Fees;
-	use PHPUnit\Framework\TestCase;
+use App\Support\Calculations\Fees;
+use PHPUnit\Framework\TestCase;
 
 	class FeesTest extends TestCase
 	{
@@ -50,10 +51,10 @@
 					[
 						"row_id" => 0,
 						"date" => "2014-12-31",
-						"user_id" => "4",
+						"user_id" => 4,
 						"user_type" => "natural",
 						"operation_type" => "operacija",
-						"amount" => "10.00",
+						"amount" => 10.00,
 						"currency" => "EUR",
 					],
 					[],
@@ -62,7 +63,7 @@
 				'cash_in fee calc_1' => [
 					[
 						"operation_type" => "cash_in",
-						"amount" => "10.00",
+						"amount" => 10.00,
 						"currency" => "EUR",
 					],
 					[],
@@ -71,7 +72,7 @@
 				'cash_in fee calc_2' => [
 					[
 						"operation_type" => "cash_in",
-						"amount" => "100.00",
+						"amount" => 100.00,
 						"currency" => "EUR",
 					],
 					[],
@@ -80,7 +81,7 @@
 				'cash_in fee calc_3' => [
 					[
 						"operation_type" => "cash_in",
-						"amount" => "17000.00",
+						"amount" => 17000.00,
 						"currency" => "EUR",
 					],
 					[],
@@ -89,7 +90,7 @@
 				'cash_in fee calc_4' => [
 					[
 						"operation_type" => "cash_in",
-						"amount" => "500.00",
+						"amount" => 500.00,
 						"currency" => "USD",
 					],
 					[],
@@ -98,7 +99,7 @@
 				'cash_in fee calc_5' => [
 					[
 						"operation_type" => "cash_in",
-						"amount" => "500.00",
+						"amount" => 500.00,
 						"currency" => "USD",
 					],
 					[
@@ -106,7 +107,7 @@
 							"row_id" => 0,
 							"date" => "2014-12-31",
 							"operation_type" => "cash_out",
-							"amount" => "1200.00",
+							"amount" => 1200.00,
 							"currency" => "EUR",
 							"fee" => 0,
 						]
@@ -126,7 +127,7 @@
 						"user_id" => 4,
 						"user_type" => 'natural',
 						"operation_type" => "cash_out",
-						"amount" => "1200.00",
+						"amount" => 1200.00,
 						"currency" => "EUR",
 					],
 					[],
@@ -139,7 +140,7 @@
 						"user_id" => 4,
 						"user_type" => 'natural',
 						"operation_type" => "cash_out",
-						"amount" => "1000.00",
+						"amount" => 1000.00,
 						"currency" => "EUR",
 					],
 					[
@@ -147,7 +148,7 @@
 							"row_id" => 0,
 							"date" => "2014-12-31",
 							"operation_type" => "cash_out",
-							"amount" => "1200.00",
+							"amount" => 1200.00,
 							"currency" => "EUR",
 							"fee" => 5,
 						],
@@ -161,7 +162,7 @@
 						"user_id" => 4,
 						"user_type" => 'natural',
 						"operation_type" => "cash_out",
-						"amount" => "1000.00",
+						"amount" => 1000.00,
 						"currency" => "EUR",
 					],
 					[
@@ -169,7 +170,7 @@
 							"row_id" => 0,
 							"date" => "2014-12-31",
 							"operation_type" => "cash_out",
-							"amount" => "1200.00",
+							"amount" => 1200.00,
 							"currency" => "EUR",
 							"fee" => 5,
 						],
@@ -177,7 +178,7 @@
 							"row_id" => 1,
 							"date" => "2015-01-01",
 							"operation_type" => "cash_out",
-							"amount" => "1000.00",
+							"amount" => 1000.00,
 							"currency" => "EUR",
 							"fee" => 5,
 						],
@@ -191,7 +192,7 @@
 						"user_id" => 1,
 						"user_type" => 'natural',
 						"operation_type" => "cash_in",
-						"amount" => "200.00",
+						"amount" => 200.00,
 						"currency" => "EUR",
 					],
 					[],
@@ -204,7 +205,7 @@
 						"user_id" => 2,
 						"user_type" => 'legal',
 						"operation_type" => "cash_out",
-						"amount" => "300.00",
+						"amount" => 300.00,
 						"currency" => "EUR",
 					],
 					[],
@@ -217,7 +218,7 @@
 						"user_id" => 1,
 						"user_type" => 'natural',
 						"operation_type" => "cash_out",
-						"amount" => "30000",
+						"amount" => 30000,
 						"currency" => "JPY",
 					],
 					[
@@ -225,7 +226,7 @@
 							"row_id" => 3,
 							"date" => "2016-01-05",
 							"operation_type" => "cash_in",
-							"amount" => "200.00",
+							"amount" => 200.00,
 							"currency" => "EUR",
 							"fee" => 5,
 						],
@@ -239,7 +240,7 @@
 						"user_id" => 1,
 						"user_type" => 'natural',
 						"operation_type" => "cash_out",
-						"amount" => "1000.00",
+						"amount" => 1000.00,
 						"currency" => "EUR",
 					],
 					[
@@ -247,7 +248,7 @@
 							"row_id" => 3,
 							"date" => "2016-01-05",
 							"operation_type" => "cash_in",
-							"amount" => "200.00",
+							"amount" => 200.00,
 							"currency" => "EUR",
 							"fee" => 5,
 						],
@@ -255,7 +256,7 @@
 							"row_id" => 5,
 							"date" => "2016-01-06",
 							"operation_type" => "cash_out",
-							"amount" => "30000",
+							"amount" => 30000,
 							"currency" => "JPY",
 							"fee" => 5,
 						],
@@ -269,7 +270,7 @@
 						"user_id" => 1,
 						"user_type" => 'natural',
 						"operation_type" => "cash_out",
-						"amount" => "100.00",
+						"amount" => 100.00,
 						"currency" => "EUR",
 					],
 					[
@@ -277,7 +278,7 @@
 							"row_id" => 3,
 							"date" => "2016-01-05",
 							"operation_type" => "cash_in",
-							"amount" => "200.00",
+							"amount" => 200.00,
 							"currency" => "EUR",
 							"fee" => 5,
 						],
@@ -285,7 +286,7 @@
 							"row_id" => 5,
 							"date" => "2016-01-06",
 							"operation_type" => "cash_out",
-							"amount" => "30000",
+							"amount" => 30000,
 							"currency" => "JPY",
 							"fee" => 5,
 						],
@@ -293,7 +294,7 @@
 							"row_id" => 6,
 							"date" => "2016-01-07",
 							"operation_type" => "cash_out",
-							"amount" => "1000.00",
+							"amount" => 1000.00,
 							"currency" => "EUR",
 							"fee" => 5,
 						],
@@ -307,7 +308,7 @@
 						"user_id" => 1,
 						"user_type" => 'natural',
 						"operation_type" => "cash_out",
-						"amount" => "100.00",
+						"amount" => 100.00,
 						"currency" => "EUR",
 					],
 					[
@@ -315,7 +316,7 @@
 							"row_id" => 3,
 							"date" => "2016-01-05",
 							"operation_type" => "cash_in",
-							"amount" => "200.00",
+							"amount" => 200.00,
 							"currency" => "EUR",
 							"fee" => 5,
 						],
@@ -323,7 +324,7 @@
 							"row_id" => 5,
 							"date" => "2016-01-06",
 							"operation_type" => "cash_out",
-							"amount" => "30000",
+							"amount" => 30000,
 							"currency" => "JPY",
 							"fee" => 5,
 						],
@@ -331,7 +332,7 @@
 							"row_id" => 6,
 							"date" => "2016-01-07",
 							"operation_type" => "cash_out",
-							"amount" => "1000.00",
+							"amount" => 1000.00,
 							"currency" => "EUR",
 							"fee" => 5,
 						],
@@ -339,7 +340,7 @@
 							"row_id" => 7,
 							"date" => "2016-01-07",
 							"operation_type" => "cash_out",
-							"amount" => "100.00",
+							"amount" => 100.00,
 							"currency" => "USD",
 							"fee" => 5,
 						],
@@ -353,7 +354,7 @@
 						"user_id" => 2,
 						"user_type" => 'legal',
 						"operation_type" => "cash_in",
-						"amount" => "1000000.00",
+						"amount" => 1000000.00,
 						"currency" => "EUR",
 					],
 					[
@@ -361,7 +362,7 @@
 							"row_id" => 4,
 							"date" => "2016-01-06",
 							"operation_type" => "cash_out",
-							"amount" => "300.00",
+							"amount" => 300.00,
 							"currency" => "EUR",
 							"fee" => 5,
 						],
@@ -375,7 +376,7 @@
 						"user_id" => 3,
 						"user_type" => 'natural',
 						"operation_type" => "cash_out",
-						"amount" => "1000.00",
+						"amount" => 1000.00,
 						"currency" => "EUR",
 					],
 					[],
@@ -388,7 +389,7 @@
 						"user_id" => 1,
 						"user_type" => 'natural',
 						"operation_type" => "cash_out",
-						"amount" => "300.00",
+						"amount" => 300.00,
 						"currency" => "EUR",
 					],
 					[
@@ -396,7 +397,7 @@
 							"row_id" => 3,
 							"date" => "2016-01-05",
 							"operation_type" => "cash_in",
-							"amount" => "200.00",
+							"amount" => 200.00,
 							"currency" => "EUR",
 							"fee" => 5,
 						],
@@ -412,7 +413,7 @@
 							"row_id" => 6,
 							"date" => "2016-01-07",
 							"operation_type" => "cash_out",
-							"amount" => "1000.00",
+							"amount" => 1000.00,
 							"currency" => "EUR",
 							"fee" => 5,
 						],
@@ -420,7 +421,7 @@
 							"row_id" => 7,
 							"date" => "2016-01-07",
 							"operation_type" => "cash_out",
-							"amount" => "100.00",
+							"amount" => 100.00,
 							"currency" => "USD",
 							"fee" => 5,
 						],
@@ -428,7 +429,7 @@
 							"row_id" => 8,
 							"date" => "2016-01-10",
 							"operation_type" => "cash_out",
-							"amount" => "100.00",
+							"amount" => 100.00,
 							"currency" => "EUR",
 							"fee" => 5,
 						],
@@ -442,7 +443,7 @@
 						"user_id" => 5,
 						"user_type" => 'natural',
 						"operation_type" => "cash_out",
-						"amount" => "3000000",
+						"amount" => 3000000,
 						"currency" => "JPY",
 					],
 					[],

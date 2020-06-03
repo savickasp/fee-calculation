@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
 
-	namespace Tests\Feature;
+namespace Tests\Feature;
 
 
-	use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\TestCase;
 
 	class ScriptFileTest extends TestCase
 	{

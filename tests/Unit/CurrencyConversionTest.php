@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
 
-	namespace Tests\Unit;
+namespace Tests\Unit;
 
 
-	use App\Support\Calculations\CurrencyConvertion;
-	use PHPUnit\Framework\TestCase;
+use App\Support\Calculations\CurrencyConvertion;
+use PHPUnit\Framework\TestCase;
 
 	class CurrencyConversionTest extends TestCase
 	{

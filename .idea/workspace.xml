@@ -3,15 +3,17 @@
   <component name="ChangeListManager">
     <list default="true" id="cc3aa881-a747-4c88-980b-a12fb93d3b14" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/script.php" beforeDir="false" afterPath="$PROJECT_DIR$/script.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/FeesController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/FeesController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Model/Users.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Users.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Support/Calculations/CurrencyConvertion.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Support/Calculations/CurrencyConvertion.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Support/Calculations/Fees.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Support/Calculations/Fees.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Support/Files/CsvReader.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Support/Files/CsvReader.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Feature/CsvReaderTest.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Feature/CsvReaderTest.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/Feature/FeesControllerTest.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Feature/FeesControllerTest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Feature/FeesTest.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Feature/FeesTest.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/Feature/ScriptFileTest.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Feature/ScriptFileTest.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/Feature/UsersTest.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Feature/UsersTest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Unit/CurrencyConversionTest.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Unit/CurrencyConversionTest.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/Unit/FeeControllerUnitTest.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Unit/FeeControllerUnitTest.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -123,7 +125,7 @@
       <option name="presentableId" value="Default" />
       <updated>1590676745365</updated>
       <workItem from="1590676749733" duration="25265000" />
-      <workItem from="1590995937175" duration="51791000" />
+      <workItem from="1590995937175" duration="53801000" />
     </task>
     <servers />
   </component>

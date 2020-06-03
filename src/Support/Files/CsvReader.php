@@ -1,93 +1,97 @@
 <?php
 
-	declare(strict_types=1);
+declare(strict_types=1);
 
+namespace App\Support\Files;
 
-	namespace App\Support\Files;
+    class CsvReader
+    {
+        private $openedFile;
+        private $indexes;
 
+        /**
+         * @return array
+         *               method opens file and sets private parameter
+         */
+        public function openFile(string $file)
+        {
+            if (!preg_match('/(.csv)$/', $file)) {
+                return ['error' => 'File format must be ".csv"'];
+            } elseif (!file_exists($file)) {
+                return ['error' => 'File not found'];
+            } else {
+                $this->openedFile = fopen($file, 'r');
+            }
+        }
 
-	class CsvReader
-	{
-		private $openedFile;
-		private $indexes;
+        /**
+         * @param bool $numberRows if set to true it adds index row_id and numerates all rows
+         *
+         * @return array
+         *               method gets gontent from openedFile parameter
+         */
+        public function getContent(bool $numberRows = false)
+        {
+            if (!$this->openedFile) {
+                return ['error' => 'Open file first'];
+            }
 
-		/**
-		 * @param string $file
-		 * @return array
-		 * method opens file and sets private parameter
-		 */
-		public function openFile(string $file)
-		{
-			if (!preg_match('/(.csv)$/', $file)) {
-				return ['error' => 'File format must be ".csv"'];
-			} elseif (!file_exists($file)) {
-				return ['error' => 'File not found'];
-			} else {
-				$this->openedFile = fopen($file, 'r');
-			}
-		}
+            $content = [];
+            $i = 0;
 
-		/**
-		 * @param bool $numberRows if set to true it adds index row_id and numerates all rows
-		 * @return array
-		 * method gets gontent from openedFile parameter
-		 */
-		public function getContent(bool $numberRows = false)
-		{
-			if (!$this->openedFile) {
-				return ['error' => 'Open file first'];
-			}
+            while (!feof($this->openedFile)) {
+                $row = fgetcsv($this->openedFile);
+                if ($numberRows) {
+                    $content[] = ['row_id' => $i] + ($this->indexes ? $this->setRowIndexes($row) : $row);
+                } else {
+                    $content[] = ($this->indexes ? $this->setRowIndexes($row) : $row);
+                }
+                ++$i;
+            }
 
-			$content = [];
-			$i = 0;
+            return $content;
+        }
 
-			while (!feof($this->openedFile)) {
-				$row = fgetcsv($this->openedFile);
-				if ($numberRows) {
-					$content[] = ['row_id' => $i] + ($this->indexes ? $this->setRowIndexes($row) : $row);
-				} else {
-					$content[] = ($this->indexes ? $this->setRowIndexes($row) : $row);
-				}
-				$i++;
-			}
+        /**
+         * @return $this
+         *               method sets index before getting content from file
+         *               this method is optional
+         */
+        public function setIndexes(array $indexes)
+        {
+            $this->indexes = $indexes;
 
-			return $content;
-		}
+            return $this;
+        }
 
-		/**
-		 * @param array $indexes
-		 * @return $this
-		 * method sets index before getting content from file
-		 * this method is optional
-		 */
-		public function setIndexes(array $indexes)
-		{
-			$this->indexes = $indexes;
+        // private methods
 
-			return $this;
-		}
+        /**
+         * @param $row
+         *
+         * @return array
+         *               helper method which sets default index if not given
+         *               if it has indexes set is uses those idexes
+         */
+        private function setRowIndexes($row)
+        {
+            $ret = [];
 
-		// private methods
+            foreach ($row as $fieldIndex => $field) {
+                if (preg_match('/^[0-9]+$/', $field)) {
+                    $field = (int) $field;
+                } elseif (preg_match('/^[0-9.]+$/', $field)) {
+                    $field = (float) $field;
+                } else {
+                    $field = (string) $field;
+                }
+                if (isset($this->indexes[$fieldIndex])) {
+                    $ret[$this->indexes[$fieldIndex]] = $field;
+                } else {
+                    $ret[$fieldIndex] = $field;
+                }
+            }
 
-		/**
-		 * @param $row
-		 * @return array
-		 * helper method which sets default index if not given
-		 * if it has indexes set is uses those idexes
-		 */
-		private function setRowIndexes($row)
-		{
-			$ret = [];
-
-			foreach ($row as $fieldIndex => $field) {
-
-				if (isset($this->indexes[$fieldIndex])) {
-					$ret[$this->indexes[$fieldIndex]] = $field;
-				} else {
-					$ret[$fieldIndex] = $field;
-				}
-			}
-
-			return $ret;
-		}
-	}
+            return $ret;
+        }
+    }

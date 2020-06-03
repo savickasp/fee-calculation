@@ -1,7 +1,9 @@
 <?php
 
+declare(strict_types=1);
 
-	namespace Tests\Feature;
+
+namespace Tests\Feature;
 
 
 	use App\FeesController;
@@ -27,10 +29,10 @@
 			$output = [
 				"row_id" => 0,
 				"date" => "2014-12-31",
-				"user_id" => "4",
+				"user_id" => 4,
 				"user_type" => "natural",
 				"operation_type" => "cash_out",
-				"amount" => "1200.00",
+				"amount" => 1200.00,
 				"currency" => "EUR",
 			];
 
@@ -51,5 +53,5 @@
 
 			$this->assertEquals($expected, $output);
 		}
-		
+
 	}
