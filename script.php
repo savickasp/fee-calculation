@@ -13,6 +13,12 @@
 			fwrite($stdout, $error['error'] . "\n");
 			exit();
 		}
+		$result = $app->calculateFees();
+
+		foreach ($result as $row) {
+			fwrite($stdout, $row . "\n");
+		}
+
 	} else {
 		fwrite($stdout, 'Enter only 1 argument after script.php' . "\n");
 		exit();
