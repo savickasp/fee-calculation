@@ -15,11 +15,23 @@
 		private $cashOutNaturalSumLimit = 1000;
 		private $cashOutLegalFeeMin = 0.5;
 
+		/**
+		 * Fees constructor.
+		 * creates instance of CurrencyConvertion class
+		 */
 		public function __construct()
 		{
 			$this->exchange = new CurrencyConvertion();
 		}
 
+		/**
+		 * @param array $operation
+		 * @param array $userOperations
+		 * @param bool $returnOnlyFee // Use it in test to check if fee was calculated correcly
+		 * @return array|false|float|int|string
+		 * it sets protedted parameters to reach them loacally in class
+		 * it determens if it is cash_out or cash_in and use other methdos to calculate
+		 */
 		public function calculateFee(array $operation, array $userOperations, bool $returnOnlyFee = false)
 		{
 			$this->operation = $operation;
@@ -41,6 +53,12 @@
 			}
 		}
 
+		// private methods
+
+		/**
+		 * @return false|float|int
+		 * calculated cash_in fee and use other method to check if fee isnt over the limit
+		 */
 		private function getCashInFee()
 		{
 			$fee = $this->cashInFeeMultiplier * $this->operation['amount'];
@@ -48,6 +66,10 @@
 			return $this->roundOrLimitFee($fee);
 		}
 
+		/**
+		 * @return false|float|int|string
+		 * it determines by user_type what method and rules to apply
+		 */
 		private function getCashOutFee()
 		{
 			if ($this->operation['user_type'] == 'legal') {
@@ -61,6 +83,11 @@
 			return $ret;
 		}
 
+		/**
+		 * @param float $fee
+		 * @return false|float|int
+		 * if fee is over limit it return limit if not it rounds up and returns rounded fee
+		 */
 		private function roundOrLimitFee(float $fee)
 		{
 			if ($fee > $this->cashInLimitEur) {
@@ -72,6 +99,12 @@
 			return $ret;
 		}
 
+		/**
+		 * @param float $fee
+		 * @param string $currency
+		 * @return false|float|int
+		 * Rounding rules by their currency
+		 */
 		private function roundNumber(float $fee, string $currency)
 		{
 			if ($currency === 'JPY') {
@@ -83,6 +116,10 @@
 			return $ret;
 		}
 
+		/**
+		 * @return false|float|int|strings
+		 * mehtod calculates fee for natural persosn cash_out
+		 */
 		private function naturalPersonFees()
 		{
 			$cashOuts = $this->getWeakCashOuts($this->operation['date']);
@@ -114,6 +151,10 @@
 			return $ret;
 		}
 
+		/**
+		 * @return false|float|int|string
+		 * method calculates fee for natural persons cash_out
+		 */
 		private function legalPersonFees()
 		{
 			$fee = $this->operation['amount'] * $this->cashOutMultiplier;
@@ -126,6 +167,12 @@
 			return $ret;
 		}
 
+		/**
+		 * @param $date
+		 * @return array
+		 * method goes throw all users operations and return array with only those operations which was made in single weak from monday
+		 * amount is converted to current operation currency
+		 */
 		private function getWeakCashOuts($date): array
 		{
 			$ret = [];

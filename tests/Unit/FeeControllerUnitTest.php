@@ -9,26 +9,32 @@
 
 	class FeeControllerUnitTest extends TestCase
 	{
-		/** @test */
-		public function has_access_to_users_class()
+		/**
+		 * @test
+		 * @dataProvider data_provider
+		 */
+		public function has_access_to_different_classes(string $expected, string $method)
 		{
 			$app = new FeesController();
-			$this->assertInstanceOf('App\Model\Users', $app->getUsersInstance());
+			$string = 'getUsersInstance';
+			$this->assertInstanceOf($expected, $app->$method());
 		}
 
-		/** @test */
-		public function has_access_to_CsvReader_class()
+		public function data_provider()
 		{
-			$app = new FeesController();
-			$this->assertInstanceOf('App\Support\Files\CsvReader', $app->getFilesInstance());
+			return [
+				[
+					'App\Model\Users',
+					'getUsersInstance'
+				],
+				[
+					'App\Support\Files\CsvReader',
+					'getFilesInstance'
+				],
+				[
+					'App\Support\Calculations\Fees',
+					'getFeesInstance'
+				],
+			];
 		}
-
-		/** @test */
-		public function has_access_to_Fees_class()
-		{
-			$app = new FeesController();
-			$this->assertInstanceOf('App\Support\Calculations\Fees', $app->getFeesInstance());
-		}
-
-
 	}

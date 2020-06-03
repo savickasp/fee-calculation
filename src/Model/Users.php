@@ -6,9 +6,8 @@
 
 	class Users
 	{
-		private $users = [];
-
 		/**
+		 * 	example view of users array
 		 *    $users = [
 		 *        '555' => [
 		 *            'user_id' => 555,
@@ -23,6 +22,12 @@
 		 *            ],
 		 *        ],
 		 *    ];
+		 */
+		private $users = [];
+
+		/**
+		 * @param array $operation
+		 * this method takes operation and adds operation details to user array
 		 */
 		public function addOperation(array $operation)
 		{
@@ -39,25 +44,29 @@
 			];
 		}
 
-		public function all()
+		/**
+		 * @return array
+		 * get all users array with all data
+		 */
+		public function all(): array
 		{
 			return $this->users;
 		}
 
-		private function createUser(array $operation)
-		{
-			$this->users[$operation['user_id']] = [
-				'user_id' => $operation['user_id'],
-				'user_type' => $operation['user_type'],
-				'operations' => [],
-			];
-		}
-
+		/**
+		 * @param int $id
+		 * @return array
+		 * get single user all operations
+		 */
 		public function getUserOperations(int $id) :array
 		{
 			return isset($this->users[$id]) ? $this->users[$id]['operations'] : [];
 		}
 
+		/**
+		 * @return array
+		 * get all users all operations orders by row_id
+		 */
 		public function getFeesOrderByRow(): array
 		{
 			$ret = [];
@@ -71,4 +80,20 @@
 
 			return  $ret;
 		}
+
+		// private methods
+
+		/**
+		 * @param array $operation
+		 * helper method to create user if it didnt exist
+		 */
+		private function createUser(array $operation)
+		{
+			$this->users[$operation['user_id']] = [
+				'user_id' => $operation['user_id'],
+				'user_type' => $operation['user_type'],
+				'operations' => [],
+			];
+		}
+
 	}

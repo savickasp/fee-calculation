@@ -8,28 +8,37 @@
 
 	class ScriptFileTest extends TestCase
 	{
-		/** @test */
-		public function can_only_enter_one_argument_after_script_file()
+		/**
+		 * @test
+		 * @dataProvider dataProvider
+		 */
+		public function can_only_enter_one_argument_after_script_file($command, $expect)
 		{
-			$terminal = shell_exec('php script.php');
+			$terminal = shell_exec($command);
 
-			$this->assertEquals("Enter only 1 argument after script.php\n", $terminal);
-
-			$terminal = shell_exec('php script.php asd asd');
-
-			$this->assertEquals("Enter only 1 argument after script.php\n", $terminal);
+			$this->assertEquals($expect, $terminal);
 		}
 
-		/** @test */
-		public function expect_errors_then_given_file_name_is_not_found_or_wrong_extension()
+		public function dataProvider()
 		{
-			$terminal = shell_exec('php script.php file.txt');
-
-			$this->assertEquals('File format must be ".csv"' . "\n", $terminal);
-
-			$terminal = shell_exec('php script.php file.csv');
-
-			$this->assertEquals('File not found' . "\n", $terminal);
+			return [
+				[
+					'php script.php',
+					"Enter only 1 argument after script.php\n"
+				],
+				[
+					'php script.php asd asd',
+					"Enter only 1 argument after script.php\n"
+				],
+				[
+					'php script.php file.txt',
+					'File format must be ".csv"' . "\n"
+				],
+				[
+					'php script.php file.csv',
+					'File not found' . "\n"
+				],
+			];
 		}
 
 	}

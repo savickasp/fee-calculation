@@ -44,6 +44,15 @@
 			return $ret;
 		}
 
+		// private methods
+
+		/**
+		 * @param float $amount
+		 * @param string $from
+		 * @param string $to
+		 * @return false|float|string
+		 * method is used to convert amount from ptimary index currency to secondary
+		 */
 		private function convertPrimaryToSecondary(float $amount, string $from, string $to)
 		{
 			if (isset($this->exchange[$from][$to])) {
@@ -55,6 +64,13 @@
 			return $ret;
 		}
 
+		/**
+		 * @param float $amount
+		 * @param string $from
+		 * @param string $to
+		 * @return false|float|string
+		 * method is used to convert amount from secondary index currency to primary
+		 */
 		private function convertSecondaryToPrimary(float $amount, string $from, string $to)
 		{
 			if (isset($this->exchange[$to][$from])) {
@@ -66,6 +82,13 @@
 			return $ret;
 		}
 
+		/**
+		 * @param float $amount
+		 * @param string $from
+		 * @param string $to
+		 * @return false|float|string
+		 * method converts amount from secondary to secondary currency throw primary currency
+		 */
 		private function convertThrowPrimary(float $amount, string $from, string $to)
 		{
 			foreach ($this->exchange as $primary => $secArray) {
