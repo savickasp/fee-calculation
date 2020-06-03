@@ -15,4 +15,4 @@ Solutions flow:
 - array is printed to stdout
 - then exit
 
-created seperate class CsvReader t oread and get content of csv file
+created seperate class CsvReader to read and get content of csv file
