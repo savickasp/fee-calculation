@@ -59,7 +59,24 @@
 					'DCS',
 					'cant convert to that currency',
 				],
-
+				[
+					1,
+					'EUR',
+					'EUR',
+					1,
+				],
+				[
+					1,
+					'USD',
+					'JPY',
+					112.664158,
+				],
+				[
+					1,
+					'JPY',
+					'USD',
+					0.008876,
+				],
 			];
 		}
 	}
