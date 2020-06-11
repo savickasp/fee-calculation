@@ -17,7 +17,7 @@ namespace App;
         protected $operations;
         protected $users;
         protected $fees;
-        protected $indexes = ['date', 'user_id', 'user_type', 'operation_type', 'amount', 'currency'];
+        protected $indexes;
 
         /**
          * FeesController constructor.
@@ -27,6 +27,7 @@ namespace App;
             $this->file = new CsvReader();
             $this->users = new Users();
             $this->fees = new Fees();
+            $this->indexes = include 'config/inputFileIndexes.php';
         }
 
         /**
@@ -61,7 +62,7 @@ namespace App;
         {
             foreach ($this->operations as $operation) {
                 $userOperations = $this->users->getUserOperations($operation['user_id']);
-                $operation = $this->fees->calculateFee($operation, $userOperations);
+                $operation['fee'] = $this->fees->getOperationFee($operation, $userOperations);
                 $this->users->addOperation($operation);
             }
 
