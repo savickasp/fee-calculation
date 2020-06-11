@@ -1,192 +1,196 @@
 <?php
 
-declare(strict_types=1);
+    declare(strict_types=1);
 
 namespace App\Support\Calculations;
 
     class Fees
     {
-        private $operation;
-        private $userOperations;
+        private $defaultCurrency = 'EUR';
         private $exchange;
-        private $cashInLimitEur = 5;
-        private $cashInFeeMultiplier = 0.0003;
-        private $cashOutMultiplier = 0.003;
-        private $cashOutNaturalSumLimit = 1000;
-        private $cashOutLegalFeeMin = 0.5;
+        private $currenciesBySmallestDigit;
+        private $cashInFeePercent;
+        private $cashInMaxSumDefaultCurrency;
+        private $cashOutNaturalFeePercent;
+        private $cashOutNaturalFreeOfChargesSumDefaultCurrency;
+        private $cashOutNaturalFreeOperations;
+        private $cashOutLegalFeePercent;
+        private $cashOutLegalMinSumDefaultCurrency;
 
         /**
          * Fees constructor.
          * creates instance of CurrencyConvertion class.
+         * sets calculation Rules from config.
          */
         public function __construct()
         {
             $this->exchange = new CurrencyConvertion();
+            $this->currenciesBySmallestDigit = include 'config/currenciesBySmallestDigits.php';
+
+            $calculationRules = include 'config/feeCalculation.php';
+
+            // setting these rules as parameters because if array was changed then all come must be revieved instead of constructor
+            $this->cashInFeePercent = $calculationRules['cashIn']['feePercent'];
+            $this->cashInMaxSumDefaultCurrency = $calculationRules['cashIn']['maxSumEur'];
+            $this->cashOutNaturalFeePercent = $calculationRules['cashOut']['natural']['feePercent'];
+            $this->cashOutNaturalFreeOfChargesSumDefaultCurrency = $calculationRules['cashOut']['natural']['freeOfChargeSumPerWeakEur'];
+            $this->cashOutNaturalFreeOperations = $calculationRules['cashOut']['natural']['freeOperationNumber'];
+            $this->cashOutLegalFeePercent = $calculationRules['cashOut']['legal']['feePercent'];
+            $this->cashOutLegalMinSumDefaultCurrency = $calculationRules['cashOut']['legal']['minSumEur'];
+        }
+
+        public function getOperationFee(array $operation, array $previousOperations)
+        {
+            if ($operation['operation_type'] === 'cash_in') {
+                $fee = $this->getCashInFee($operation);
+            } elseif ($operation['operation_type'] === 'cash_out') {
+                if ($operation['user_type'] === 'legal') {
+                    $fee = $this->getLegalCashOutFee($operation);
+                } elseif ($operation['user_type'] === 'natural') {
+                    $weakCashouts = $this->getWeakOperations($operation['date'], $previousOperations, 'cash_out');
+                    $fee = $this->getNaturalCashOutFee($operation, $weakCashouts);
+                } else {
+                    die('unknown user type');
+                }
+            } else {
+                die('unknown operation');
+            }
+
+            return $this->roundNumber($fee, $operation['currency']);
+        }
+
+        // private
+
+        /**
+         * @return float|int
+         */
+        private function getLegalCashOutFee(array $operation)
+        {
+            // if operation isnt in default currency, then convert max fee limit to operation currency
+            if ($operation['currency'] === $this->defaultCurrency) {
+                $feeMinLimitOperationCurrency = $this->cashOutLegalMinSumDefaultCurrency;
+            } else {
+                $feeMinLimitOperationCurrency = $this->exchange->convert($this->cashOutLegalMinSumDefaultCurrency,
+                    $this->defaultCurrency,
+                    $operation['currency']);
+            }
+
+            $fee = $operation['amount'] * $this->cashOutLegalFeePercent / 100;
+
+            // returns value of $fee if $fee is heighter then mininum operation fee, else ir return minimum operation fee value
+            return ($fee > $feeMinLimitOperationCurrency) ? $fee : $feeMinLimitOperationCurrency;
         }
 
         /**
-         * @param bool $returnOnlyFee // Use it in test to check if fee was calculated correcly
+         * @return false|float|int
+         */
+        private function getNaturalCashOutFee(array $operation, array $weakCashouts)
+        {
+            $sumOverLimitsDefaultCurrency = 0;
+            $weakCashoutSumDefaultCurrency = 0;
+
+            // convert all cash outs to default currency and sum them all
+            foreach ($weakCashouts as $cashout) {
+                if ($cashout['currency'] !== $this->defaultCurrency) {
+                    $weakCashoutSumDefaultCurrency += $this->exchange->convert($cashout['amount'],
+                        $cashout['currency'],
+                        $this->defaultCurrency);
+                } else {
+                    $weakCashoutSumDefaultCurrency += $cashout['amount'];
+                }
+            }
+
+            // get current operation amount in default currency
+            $operationDefaultCurrency = $this->exchange->convert($operation['amount'],
+                $operation['currency'],
+                $this->defaultCurrency);
+
+            $weakCashoutSumDefaultCurrency += $operationDefaultCurrency;
+
+            // checks if operation count per period isnt higher, else if adds current operation amount to $sumOverLimitsDefaultCurrency
+            if (count($weakCashouts) + 1 > $this->cashOutNaturalFreeOperations) {
+                $sumOverLimitsDefaultCurrency = $operation['amount'];
+
+            // checks if all weak operation smount sum plius current operation isnt higher then limit
+            } elseif ($weakCashoutSumDefaultCurrency > $this->cashOutNaturalFreeOfChargesSumDefaultCurrency) {
+                $difference = $weakCashoutSumDefaultCurrency - $this->cashOutNaturalFreeOfChargesSumDefaultCurrency;
+                $sumOverLimitsDefaultCurrency = ($difference < $operationDefaultCurrency) ? $difference : $operationDefaultCurrency;
+            }
+
+            // sum what is needed to calculate fee is converted back to operation surrancy
+            $sumOverLimitsOperationCurrency = $this->exchange->convert($sumOverLimitsDefaultCurrency,
+                $this->defaultCurrency,
+                $operation['currency']);
+
+            // fee calculated
+            $fee = $sumOverLimitsOperationCurrency * $this->cashOutNaturalFeePercent / 100;
+
+            return $this->roundNumber($fee, $operation['currency']);
+        }
+
+        /**
+         * @param $operation
          *
-         * @return array|false|float|int|string
-         *                                      it sets protedted parameters to reach them loacally in class
-         *                                      it determens if it is cash_out or cash_in and use other methdos to calculate
-         */
-        public function calculateFee(array $operation, array $userOperations, bool $returnOnlyFee = false)
-        {
-            $this->operation = $operation;
-            $this->userOperations = $userOperations;
-
-            if ($this->operation['operation_type'] === 'cash_in') {
-                $ret = $this->getCashInFee();
-            } elseif ($this->operation['operation_type'] === 'cash_out') {
-                $ret = $this->getCashOutFee();
-            } else {
-                $ret = 'unknown operation';
-            }
-
-            if ($returnOnlyFee) {
-                return $ret;
-            } else {
-                $operation['fee'] = $ret;
-
-                return $operation;
-            }
-        }
-
-        // private methods
-
-        /**
          * @return false|float|int
-         *                         calculated cash_in fee and use other method to check if fee isnt over the limit
          */
-        private function getCashInFee()
+        private function getCashInFee($operation)
         {
-            $fee = $this->cashInFeeMultiplier * $this->operation['amount'];
-
-            return $this->roundOrLimitFee($fee);
-        }
-
-        /**
-         * @return false|float|int|string
-         *                                it determines by user_type what method and rules to apply
-         */
-        private function getCashOutFee()
-        {
-            if ($this->operation['user_type'] === 'legal') {
-                $ret = $this->legalPersonFees();
-            } elseif ($this->operation['user_type'] === 'natural') {
-                $ret = $this->naturalPersonFees();
+            // if operation isnt in default currency, then convert max fee limit to operation currency
+            if ($operation['currency'] === $this->defaultCurrency) {
+                $feeMaxLimitOperationCurrency = $this->cashInMaxSumDefaultCurrency;
             } else {
-                $ret = 'user type not found';
+                $feeMaxLimitOperationCurrency = $this->exchange->convert($this->cashInMaxSumDefaultCurrency,
+                    $this->defaultCurrency,
+                    $operation['currency']);
             }
 
-            return $ret;
+            $fee = $operation['amount'] * $this->cashInFeePercent / 100;
+
+            // check if fee isnt over the max fee limit
+            $fee = ($fee > $feeMaxLimitOperationCurrency) ? $feeMaxLimitOperationCurrency : $fee;
+
+            return $this->roundNumber($fee, $operation['currency']);
         }
 
         /**
          * @return false|float|int
-         *                         if fee is over limit it return limit if not it rounds up and returns rounded fee
-         */
-        private function roundOrLimitFee(float $fee)
-        {
-            if ($fee > $this->cashInLimitEur) {
-                $ret = $this->cashInLimitEur;
-            } else {
-                $ret = $this->roundNumber($fee, $this->operation['currency']);
-            }
-
-            return $ret;
-        }
-
-        /**
-         * @return false|float|int
-         *                         Rounding rules by their currency
          */
         private function roundNumber(float $fee, string $currency)
         {
-            if ($currency === 'JPY') {
-                $ret = ceil($fee);
-            } elseif ($currency === 'EUR' || $currency === 'USD') {
-                $ret = ceil($fee * 100) / 100;
+            if (in_array($currency, $this->currenciesBySmallestDigit['1'], true)) {
+                $rounded = ceil($fee);
+            } elseif (in_array($currency, $this->currenciesBySmallestDigit['0.01'], true)) {
+                $rounded = ceil($fee * 100) / 100;
             }
 
-            return $ret;
+            return $rounded;
         }
 
         /**
-         * @return false|float|int|strings
-         *                                 mehtod calculates fee for natural persosn cash_out
+         * @param null $filterOperationType
          */
-        private function naturalPersonFees()
+        private function getWeakOperations(string $date, array $previousOperations, $filterOperationType = null): array
         {
-            $cashOuts = $this->getWeakCashOuts($this->operation['date']);
-
-            if ((count($cashOuts) + 1) <= 3) {
-                $sum = $this->operation['amount'];
-                foreach ($cashOuts as $cashOut) {
-                    $sum += $cashOut;
-                }
-
-                $casOutLimitOppCurrency = $this->exchange->convert($this->cashOutNaturalSumLimit, 'EUR', $this->operation['currency']);
-                if ($sum <= $casOutLimitOppCurrency) {
-                    $ret = (float) 0.00;
-                } else {
-                    $sum -= $casOutLimitOppCurrency;
-
-                    $fee = (($sum > $this->operation['amount']) ? $this->operation['amount'] : $sum) * $this->cashOutMultiplier;
-
-                    $ret = $this->roundNumber($fee, $this->operation['currency']);
-                }
-            } else {
-                $fee = $this->operation['amount'] * $this->cashOutMultiplier;
-
-                $ret = $this->exchange->convert($fee, $this->operation['currency'], 'EUR');
-                $ret = $this->roundNumber($ret, $this->operation['currency']);
-            }
-
-            return $ret;
-        }
-
-        /**
-         * @return false|float|int|string
-         *                                method calculates fee for natural persons cash_out
-         */
-        private function legalPersonFees()
-        {
-            $fee = $this->operation['amount'] * $this->cashOutMultiplier;
-
-            $ret = $this->exchange->convert($fee, $this->operation['currency'], 'EUR');
-            $ret = $this->roundNumber($ret, $this->operation['currency']);
-            $ret = ($ret > $this->cashOutLegalFeeMin) ? $ret : $this->cashOutLegalFeeMin;
-            $ret = $this->exchange->convert($ret, 'EUR', $this->operation['currency']);
-            $ret = $this->roundNumber($ret, $this->operation['currency']);
-
-            return $ret;
-        }
-
-        /**
-         * @param $date
-         *
-         * @return array
-         *               method goes throw all users operations and return array with only those operations which was made in single weak from monday
-         *               amount is converted to current operation currency
-         */
-        private function getWeakCashOuts($date): array
-        {
-            $ret = [];
+            $weakOperations = [];
             $weakDay = date('N', strtotime($date));
+
+            // calculate chich day is monday
             if ($weakDay > 1) {
-                $dif = $weakDay - 1;
-                $monday = date('Y-m-d', strtotime('-'.$dif.'day', strtotime($date)));
+                $difference = $weakDay - 1;
+                $monday = date('Y-m-d', strtotime('-'.$difference.'day', strtotime($date)));
             } else {
                 $monday = $date;
             }
-            foreach ($this->userOperations as $operation) {
-                if ($operation['date'] >= $monday && $operation['date'] <= $date && $operation['operation_type'] === 'cash_out') {
-                    $ret[] = $this->exchange->convert($operation['amount'], $operation['currency'], $this->operation['currency']);
+
+            // filter throw operations to get all oprations from monday to weakday( current operation day)
+            foreach ($previousOperations as $operation) {
+                if ($operation['date'] >= $monday && $operation['date'] <= $date) {
+                    if ($filterOperationType ? $filterOperationType === $operation['operation_type'] : true) {
+                        $weakOperations[] = $operation;
+                    }
                 }
             }
 
-            return $ret;
+            return $weakOperations;
         }
     }
