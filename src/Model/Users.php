@@ -48,7 +48,7 @@ namespace App\Model;
          * @return array
          *               get all users array with all data
          */
-        public function all(): array
+        public function getAllUsers(): array
         {
             return $this->users;
         }
