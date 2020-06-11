@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+    declare(strict_types=1);
 
 namespace App\Support\Files;
 
@@ -10,8 +10,9 @@ namespace App\Support\Files;
         private $indexes;
 
         /**
+         * method opens file and sets private parameter.
+         *
          * @return array
-         *               method opens file and sets private parameter
          */
         public function openFile(string $file)
         {
@@ -25,10 +26,11 @@ namespace App\Support\Files;
         }
 
         /**
+         * method gets content from openedFile parameter.
+         *
          * @param bool $numberRows if set to true it adds index row_id and numerates all rows
          *
          * @return array
-         *               method gets gontent from openedFile parameter
          */
         public function getContent(bool $numberRows = false)
         {
@@ -53,9 +55,10 @@ namespace App\Support\Files;
         }
 
         /**
+         * method sets index before getting content from file
+         * this method is optional.
+         *
          * @return $this
-         *               method sets index before getting content from file
-         *               this method is optional
          */
         public function setIndexes(array $indexes)
         {
@@ -67,15 +70,16 @@ namespace App\Support\Files;
         // private methods
 
         /**
+         * helper method which sets default index if not given
+         * if it has indexes set is uses those idexes.
+         *
          * @param $row
          *
          * @return array
-         *               helper method which sets default index if not given
-         *               if it has indexes set is uses those idexes
          */
         private function setRowIndexes($row)
         {
-            $ret = [];
+            $rowWithIndexes = [];
 
             foreach ($row as $fieldIndex => $field) {
                 if (preg_match('/^[0-9]+$/', $field)) {
@@ -86,12 +90,12 @@ namespace App\Support\Files;
                     $field = (string) $field;
                 }
                 if (isset($this->indexes[$fieldIndex])) {
-                    $ret[$this->indexes[$fieldIndex]] = $field;
+                    $rowWithIndexes[$this->indexes[$fieldIndex]] = $field;
                 } else {
-                    $ret[$fieldIndex] = $field;
+                    $rowWithIndexes[$fieldIndex] = $field;
                 }
             }
 
-            return $ret;
+            return $rowWithIndexes;
         }
     }
